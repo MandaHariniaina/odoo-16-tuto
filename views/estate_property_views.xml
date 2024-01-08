@@ -17,9 +17,11 @@
                                 <field name="name" class="mb16"/>
                             </h1>
                             <field name="active" invisible="1"/>
+                            <field name="tag_ids" widget="many2many_tags" />
                         </div>
                         <group col="4" >
                             <group colspan="2">
+                                <field name="property_type_id" />
                                 <field name="postcode" />
                                 <field name="date_availability" />
                             </group>
@@ -39,6 +41,15 @@
                                     <field name="garden" />
                                     <field name="garden_area" />
                                     <field name="garden_orientation" />
+                                </group>
+                            </page>
+                            <page string="Offers" >
+                                <field name="offer_ids"/>
+                            </page>
+                            <page string="Other Info" >
+                                <group>
+                                    <field name="salesperson_id" />
+                                    <field name="buyer_id" />
                                 </group>
                             </page>
                         </notebook>
