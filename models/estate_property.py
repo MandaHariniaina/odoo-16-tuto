@@ -2,7 +2,7 @@
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import fields, models, api
+from odoo import fields, models, api, exceptions
 
 
 class EstateProperty(models.Model):
@@ -49,6 +49,20 @@ class EstateProperty(models.Model):
         ('canceled', u'Canceled'),
     ]
     state = fields.Selection(STATES, default='new')
+
+
+    # State actions
+    def action_sold(self):
+        if self.state == "canceled":
+            raise exceptions.UserError("Canceled properties cannot be sold")
+        self.state = "sold"
+        return True
+    
+    def action_cancel(self):
+        if self.state == "sold":
+            raise exceptions.UserError("Sold properties cannot be canceled")
+        self.state = "canceled"
+        return True
 
     @api.onchange("garden")
     def _onchange_garden(self):

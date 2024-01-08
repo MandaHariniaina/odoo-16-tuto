@@ -11,13 +11,25 @@ class EstatePropertyOffer(models.Model):
     _description = "Estate property offer description"
 
     price = fields.Float()
-    status = fields.Selection(
+    state = fields.Selection(
         [("accepted", "Accepted"), ("refused", "Refused")], copy=False
     )
     partner_id = fields.Many2one("res.partner", required=True)
     property_id = fields.Many2one("estate.property", required=True)
     validity = fields.Integer(string="Validity(Days)",default=7)
     date_deadline = fields.Date(string="Deadline", compute="_compute_date_deadline", inverse="_inverse_date_deadline")
+
+    def action_refuse(self):
+        self.state = "refused"
+        return True
+
+    def action_accept(self):
+        # Refuse all property previously accepted offer
+        for accepted_offer in self.env["estate.property.offer"].search([("property_id", "=", self.property_id.id), ("state", "=", "accepted")]):
+            accepted_offer.state = "refused"
+        self.state = "accepted"
+        self.property_id.selling_price = self.price
+        return True
 
     @api.depends("validity")
     def _compute_date_deadline(self):
